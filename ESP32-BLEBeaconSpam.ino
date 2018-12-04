@@ -133,12 +133,8 @@ void setup() {
   for(int i=0;i<randomLoopSize;i++) {
     std::string randomUUID = uuid.GenerateUUID();
   }
-  //Serial.printf("start ESP32 %d\n",bootcount++);
-  //Serial.printf("deep sleep (%lds since last reset, %lds since last boot)\n",now.tv_sec,now.tv_sec-last);
   beaconSpam();
-  //Serial.printf("enter deep sleep\n");
-  esp_deep_sleep(100000LL); // sleep 100ms
-  //Serial.printf("in deep sleep\n");
+  ESP.restart();
 }
 
 
