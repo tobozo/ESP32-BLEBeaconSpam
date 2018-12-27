@@ -37,6 +37,8 @@
 #include "BLEUtils.h"
 #include "BLEBeacon.h"
 #include "esp_sleep.h"
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 #include "uuidgen.h" // from https://github.com/1337ninja/UUIDGenerator
 #include "compile_time.h"
@@ -102,7 +104,7 @@ void beaconSpam() {
   }
   Serial.println();
   last = now.tv_sec;
-  btStart();
+  //btStart();
   // Create the BLE Device
   BLEDevice::init("");
   // Create the BLE Server
@@ -112,15 +114,17 @@ void beaconSpam() {
    // Start advertising
   pAdvertising->start();
   //Serial.println("Advertizing started...");
-  delay(500);
+  delay(100);
   pAdvertising->stop();
-  btStop();
+  //btStop();
 }
 
 
 
 void setup() {
   Serial.begin(115200);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+  
   gettimeofday(&now, NULL);
   if(now.tv_sec <= 1) {
     Serial.println("First run, setting time");
@@ -133,8 +137,13 @@ void setup() {
   for(int i=0;i<randomLoopSize;i++) {
     std::string randomUUID = uuid.GenerateUUID();
   }
+  //Serial.printf("start ESP32 %d\n",bootcount++);
+  //Serial.printf("deep sleep (%lds since last reset, %lds since last boot)\n",now.tv_sec,now.tv_sec-last);
   beaconSpam();
+  //Serial.printf("enter deep sleep\n");
+  //esp_deep_sleep(100000LL); // sleep 100ms
   ESP.restart();
+  //Serial.printf("in deep sleep\n");
 }
 
 
